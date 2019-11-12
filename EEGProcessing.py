@@ -17,7 +17,7 @@ class EEGAnalyser:
     num_trials = 0
 
 
-    def __init__(self, min_freq ,max_freq, num_freq, srate = 500, num_chan = 19):
+    def __init__(self, num_freq, srate = 500, num_chan = 19, min_freq = 4 ,max_freq = 30):
 
         """
         Define sample rate and parameters for frequencies analysis
