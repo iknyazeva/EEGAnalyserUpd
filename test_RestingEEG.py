@@ -2,59 +2,71 @@ from RestingEEG import RestingEEG
 import matplotlib.pyplot as plt
 import os
 
-datapath = "/Users/Irisha1/MyProjects/EEG/RestingEEG/Data_Txt"
-filename  = os.path.join(datapath,'afl_01.TXT')
 
-filepath  = os.path.join(datapath, filename)
+def test_load_data(filepath, plot_show=True):
+    exp = RestingEEG(filepath)
 
-def test_load_data(filepath, plot_show = True):
+    exp.load_data(plot_show)
 
-
-    Exp = RestingEEG(filepath)
-
-    data = Exp.load_data(plot_show)
-
-    return  data
+    return exp
 
 
-def test_filter(filepath, f,fwhm):
-    Exp = RestingEEG(filepath)
-    Exp.load_data(plot_show = False)
-    filtdata = Exp.filterFGx(f,fwhm)
+def test_GaussianFilter(filepath, f, fwhm):
+    exp = RestingEEG(filepath)
+    exp.load_data(plot_show=False)
+    exp.data = exp.data[:, :10000]
+    filtdata = exp.filterFGx(f, fwhm)
     return filtdata
 
 
-def test_corrmat(filepath, f, fwhm):
-    Exp = RestingEEG(filepath)
-    Exp.load_data(plot_show=False)
-    Exp.data = Exp.data[:, :100000]
-    corrmat = Exp.phase_sync_all(f,fwhm)
-    return corrmat
+def test_phase_synch_two_series(filepath, f, fwhm, chan1, chan2):
+    exp = RestingEEG(filepath)
+    exp.load_data(plot_show=False)
+    exp.data = exp.data[:, :10000]
+    rho_ispc, rho_pli, rho_pow = exp.phase_sync_two_series(f, fwhm, chan1, chan2)
+    return rho_ispc, rho_pli, rho_pow
 
 
-def test_pow_corrmat(filepath, f, fwhm):
-    Exp = RestingEEG(filepath)
-    Exp.load_data(plot_show=False)
-    Exp.data = Exp.data[:, :100000]
-    corrmat = Exp.pow_sync_all(f, fwhm)
-    return corrmat
+
+def test_wavelet_phase_sync_two_series(filepath, f, chan1, chan2):
+    exp = RestingEEG(filepath)
+    exp.load_data(plot_show=False)
+    exp.data = Exp.data[:, :10000]
+    rho_ispc, rho_pli, rho_pow = exp.test_wavelet_phase_sync_two_series(filepath, f, chan1, chan2)
+    return rho_ispc, rho_pli, rho_pow
+
+
+def test_wavelet_phase_synch_all(filepath, f):
+    exp = RestingEEG(filepath)
+    exp.load_data(plot_show=False)
+    exp.data = exp.data[:, :10000]
+    rho_ispc, rho_pli, rho_pow = exp.wavelet_phase_synch_all(f)
+
+    return rho_ispc, rho_pli, rho_pow
+
+
+def test_phase_sync_all(filepath, f, fwhm):
+    exp = RestingEEG(filepath)
+    exp.load_data(plot_show=False)
+    exp.data = exp.data[:, :10000]
+    rho_ispc, rho_pli, rho_pow = exp.phase_sync_all(f, fwhm)
+
+    return rho_ispc, rho_pli, rho_pow
+
+
+
 
 
 
 if __name__ == "__main__":
-    #data = test_load_data(filepath,plot_show=True)
-    f  = 30
+    folder_path = "../Data_Txt"
+    filename = "afl_01.TXT"
+    f = 30
     fwhm = 3
-    corrmat = test_corrmat(filepath, f, fwhm)
-    plt.subplot(121);plt.matshow(corrmat, fignum=False)
-    corrmat = test_pow_corrmat(filepath, f, fwhm)
-    plt.subplot(122); plt.matshow(corrmat,fignum=False)
+    filepath = os.path.join(folder_path, filename)
 
-    #filtdata = Exp.filterFGx(f, fwhm)
-    #angldata = Exp.compute_angles(f,fwhm)
-    #plt.figure(figsize = (10,5))
-    ##plt.subplot(121); plt.plot(Exp.data[0, :1000])
-    #rho = Exp.phase_sync_two_series(f, fwhm, 1, 2)
-    #plt.subplot(121); plt.plot(filtdata[1, :1000])
-    #plt.subplot(122); plt.plot(angldata[1, :1000])
-    plt.show()
+    #fnames = os.listdir(folder_path)
+    rho_ispc, rho_pli, rho_pow = test_phase_sync_all(filepath, f, fwhm)
+    rho_ispc_w, rho_pli_w, rho_pow_w =  test_wavelet_phase_synch_all(filepath, f)
+
+    print(os.path.isfile(filepath))
