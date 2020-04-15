@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import os
 
 
+
 def test_load_data(filepath, plot_show=True):
     exp = RestingEEG(filepath)
 
